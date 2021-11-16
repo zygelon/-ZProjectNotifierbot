@@ -1,7 +1,6 @@
 #pragma once
 
 #include "wx/wx.h"
-#include "unFrame.h"
 
 class unApp : public wxApp
 {
@@ -9,8 +8,10 @@ public:
 	unApp();
 	~unApp();
 
-	virtual bool onInit();
+	virtual bool OnInit() override;
+	void SetRootPath(const wxString& inPath);
 
 private:
-	unFrame* m_frame = nullptr;
+	class unFrame* m_frame = nullptr;
+	wxString m_rootProjectPath = {};
 };
