@@ -12,7 +12,8 @@ namespace UnID
 	};
 }
 
-unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Deamon", wxPoint(500, 500), wxSize(400, 200)),
+unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon", wxPoint(500, 500), wxSize(400, 200),
+	(wxMINIMIZE_BOX | wxCLOSE_BOX | wxSYSTEM_MENU | wxCAPTION)),
 	m_ownerApp(inOwnerApp)
 {
 	const wxString descrText = "Subscribe daemon to your project.\n\Browse to your root UE Project folder";
