@@ -16,7 +16,8 @@ private:
 	unApp* m_ownerApp = nullptr;
 
 	wxTextCtrl* m_telegrmLoginTextBox = nullptr;
-	wxButton* m_browseToButton = nullptr;
+	wxString m_projectPath = {};
+	//wxButton* m_browseToButton = nullptr;
 
 	void onActivateButtonClicked(wxCommandEvent& event);
 	void OnBrowseToClicked(wxCommandEvent& event);

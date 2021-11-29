@@ -2,39 +2,65 @@
 #include "unApp.h"
 #include <filesystem>
 #include <vector>
+#include <cassert>
 
 namespace UnID
 {
 	enum
 	{
 		startID = 10000,
-/*		fileDialogDescr,
-		fileDialogActivator,
-		telegrmLogin*/
 	};
 }
 
 namespace
 {
 	const std::string uprojectExtName = ".uproject";
+	const wxString logsRelativePath = L"\\Saved\\Logs\\Challange.log";
+
 	bool isUprojectFileName(const std::string& fileName)
 	{
 		return fileName.find(uprojectExtName) != std::string::npos;
 	}
 
-	bool validateProjectPath(const wxString& projectPath)
+	wxString tryGetProjectName(const wxString& projectPath)
 	{
 		namespace fs = std::filesystem;
-		std::vector<fs::path> paths;
+		fs::path path = projectPath.wc_str();
+		if (!fs::is_directory(fs::path{ projectPath.wc_str() }))
+		{
+			return {};
+		}
 		for (const auto& entry : fs::directory_iterator(projectPath.wc_str()))
 		{
-			paths.emplace_back(entry.path().filename().string());
-			if (isUprojectFileName(entry.path().filename().string()))
+			const auto& iterFilename = entry.path().filename().string();
+			if (isUprojectFileName(iterFilename))
 			{
-				return true;
+				return iterFilename;
 			}
 		}
-		return false;
+		return {};
+	}
+
+	void showWarningDialog(const wxString& dialogMessage)
+	{
+		auto* const warningDialog = new wxMessageDialog(NULL,
+			dialogMessage, wxT("Info"), wxOK);
+		warningDialog->ShowModal();
+	}
+
+	wxString getPathToProjectLogFile(const wxString& projectPath)
+	{
+		return projectPath + logsRelativePath;
+	}
+
+	void testParseProject(const wxString& projectPath)
+	{
+		const auto& logFilePath = getPathToProjectLogFile(projectPath);
+		if (!std::filesystem::exists(logFilePath.wc_str()))
+		{
+			return;
+		}
+		bool b = true;
 	}
 }
 
@@ -52,11 +78,10 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 
 	const wxPoint telegrmLoginPos = { 10, 70 };
 	m_telegrmLoginTextBox = new wxTextCtrl(this, wxID_ANY, wxEmptyString, telegrmLoginPos, wxDefaultSize, wxTE_PROCESS_ENTER);
-	//m_telegrmLoginTextBox->Bind(wxEVT_TEXT_ENTER, &unFrame::OnTelegrmLoginEntered, this);
 
 	const wxPoint browseToPosition = { 150, 70 };
-	m_browseToButton = new wxButton(this, wxID_ANY, "Browse to...", browseToPosition);
-	m_browseToButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::OnBrowseToClicked, this);
+	auto* const browseToButton = new wxButton(this, wxID_ANY, "Browse to...", browseToPosition);
+	browseToButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::OnBrowseToClicked, this);
 
 	const wxPoint activationButtonPos = { 150, 110 };
 	auto* const activateButton = new wxButton(this, wxID_ANY, "Activate", activationButtonPos);
@@ -66,7 +91,18 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 
 void unFrame::onActivateButtonClicked(wxCommandEvent& event)
 {
-	const wxString telegrmLogin = m_telegrmLoginTextBox->GetValue();
+	const wxString& telegrmLogin = m_telegrmLoginTextBox->GetValue();
+	if (telegrmLogin == wxString{})
+	{
+		showWarningDialog(wxT("Please Enter Your Telegram Login"));
+		return;
+	}
+	if (tryGetProjectName(m_projectPath) != wxString{})
+	{
+		showWarningDialog(wxT("Cannot find Uproject file on entered path"));
+		return;
+	}
+	testParseProject(m_projectPath);
 }
 
 unFrame::~unFrame()
@@ -86,6 +122,14 @@ void unFrame::OnBrowseToClicked(wxCommandEvent& event)
 		return;     // the user changed idea...
 	}
 	event.Skip();
-	const bool isValidProjectPath = validateProjectPath(openDirDialog.GetPath());
-	bool bdasa = false;
+	const wxString& projectPath = openDirDialog.GetPath();
+	const bool isValidProjectPath = tryGetProjectName(projectPath) != wxString{};
+	if (isValidProjectPath)
+	{
+		m_projectPath = projectPath;
+	}
+	else
+	{
+		showWarningDialog(wxT("Cannot find Uproject file on entered path"));
+	}
 }
