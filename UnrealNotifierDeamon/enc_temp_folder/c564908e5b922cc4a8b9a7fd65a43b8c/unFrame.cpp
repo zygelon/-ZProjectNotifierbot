@@ -1,11 +1,8 @@
 #include "unFrame.h"
 #include "unApp.h"
 #include <filesystem>
-#include <fstream>
 #include <vector>
 #include <cassert>
-
-using std::ifstream;
 
 namespace UnID
 {
@@ -19,13 +16,11 @@ namespace
 {
 	const std::string uprojectExtName = ".uproject";
 	const wxString logsRelativePath = L"\\Saved\\Logs\\";
-	const wxPoint windowPos = wxPoint(400, 500);
-	const wxSize windowSize = wxSize(250, 150);
 
-/*	bool isUprojectFileName(const std::string& fileName)
+	bool isUprojectFileName(const std::string& fileName)
 	{
 		return fileName.find(uprojectExtName) != std::string::npos;
-	}*/
+	}
 
 	wxString tryGetProjectName(const wxString& projectPath)
 	{
@@ -38,7 +33,7 @@ namespace
 		for (const auto& entry : fs::directory_iterator(projectPath.wc_str()))
 		{
 			auto iterFilename = entry.path().filename().string();
-			if (iterFilename.find(uprojectExtName) != std::string::npos)
+			if (isUprojectFileName(iterFilename))
 			{
 				iterFilename.erase(iterFilename.find(uprojectExtName));
 				return iterFilename;
@@ -60,71 +55,41 @@ namespace
 		return projectPath + logsRelativePath + projectName + L".log";
 	}
 
-	ifstream getFileToReading(const wxString& filePath)
-	{
-		ifstream file;
-		if (!std::filesystem::exists(filePath.wc_str()))
-		{
-			return file;
-		}
-		file.open(filePath.wc_str());
-		return file;
-	}
-
 	void testParseProject(const wxString& projectPath)
 	{
 		const auto& logFilePath = getPathToProjectLogFile(projectPath);
 		auto debug = logFilePath.wc_str();
-		ifstream file = getFileToReading(logFilePath);
-		if (file.is_open())
+		if (!std::filesystem::exists(logFilePath.wc_str()))
 		{
-			std::vector<std::string> debugLines;
-			for (std::string line; std::getline(file, line); )
-			{
-				debugLines.emplace_back(line);
-			}
-			bool b = true;
+			return;
 		}
+		bool b = true;
 	}
-
 }
 
-using std::string;
-
-bool unFrame::isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const
-{
-/*	if (m_parsingLoopStatus == parsingLoopStatus::Inactive)
-	{
-		return false;
-	}*/
-	return tryGetProjectName(projectPath) != wxString{} && telegrmName != wxString{};
-}
-
-unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon", windowPos, windowSize,
+unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon", wxPoint(400, 500), wxSize(300, 200),
 	(wxMINIMIZE_BOX | wxCLOSE_BOX | wxSYSTEM_MENU | wxCAPTION)),
 	m_ownerApp(inOwnerApp)
 {
 	const wxString browseToDescrText = L"Project path";
-	const wxPoint browseToDescrPos = { 150, 10 };
+	const wxPoint browseToDescrPos = { 150, 50 };
 	auto* const fileDialogDescrText = new wxStaticText(this, wxID_ANY, browseToDescrText, browseToDescrPos);
 	
 	const wxString telegrmLoginDescrText = L"Telegram Login";
-	const wxPoint telegrmLoginDescrPos = { 10, 10 };
+	const wxPoint telegrmLoginDescrPos = { 10, 50 };
 	auto* const telegrmLoginDescrTextObj = new wxStaticText(this, wxID_ANY, telegrmLoginDescrText, telegrmLoginDescrPos);
 
-	const wxPoint telegrmLoginPos = { 10, 40 };
+	const wxPoint telegrmLoginPos = { 10, 70 };
 	m_telegrmLoginTextBox = new wxTextCtrl(this, wxID_ANY, wxEmptyString, telegrmLoginPos, wxDefaultSize, wxTE_PROCESS_ENTER);
 
-	const wxPoint browseToPosition = { 150, 40 };
+	const wxPoint browseToPosition = { 150, 70 };
 	auto* const browseToButton = new wxButton(this, wxID_ANY, "Browse to...", browseToPosition);
 	browseToButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::OnBrowseToClicked, this);
 
-	const wxPoint activationButtonPos = { 75, 70 };
+	const wxPoint activationButtonPos = { 150, 110 };
 	auto* const activateButton = new wxButton(this, wxID_ANY, "Activate", activationButtonPos);
 	activateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onActivateButtonClicked, this);
 
-	SetFocus();
-	//parsingLoop();
 }
 
 void unFrame::onActivateButtonClicked(wxCommandEvent& event)
@@ -141,7 +106,7 @@ void unFrame::onActivateButtonClicked(wxCommandEvent& event)
 		return;
 	}
 	testParseProject(m_projectPath);
-	//parsingLoop();
+	ParsingLoop();
 }
 
 unFrame::~unFrame()
@@ -173,15 +138,17 @@ void unFrame::OnBrowseToClicked(wxCommandEvent& event)
 	}
 }
 
-void unFrame::parsingLoop()
+void unFrame::ParsingLoop()
 {
+	static bool isActiveParsingLoop = false;
+	if (isActiveParsingLoop)
+	{
+		return;
+	}
+	isActiveParsingLoop = true;
 	while (1)
 	{
-		const wxString& telegrmLogin = m_telegrmLoginTextBox->GetValue();
-		if (isParsingLoopActive(telegrmLogin, m_projectPath))
-		{
-
-		}
+		isActiveParsingLoop = true;
 		wxYield();
 	}
 }

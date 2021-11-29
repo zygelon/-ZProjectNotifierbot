@@ -4,12 +4,6 @@
 
 class unApp;
 
-enum class parsingLoopStatus
-{
-	AllowedActive,
-	Inactive,
-};
-
 class unFrame : public wxFrame
 {
 public:
@@ -23,12 +17,11 @@ private:
 
 	wxTextCtrl* m_telegrmLoginTextBox = nullptr;
 	wxString m_projectPath = {};
-	//parsingLoopStatus m_parsingLoopStatus = parsingLoopStatus::Inactive;
+	//wxButton* m_browseToButton = nullptr;
 
 	void onActivateButtonClicked(wxCommandEvent& event);
 	void OnBrowseToClicked(wxCommandEvent& event);
 
-	void parsingLoop();
-	bool isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const;
+	void ParsingLoop();
 	//void OnTelegrmLoginEntered(wxCommandEvent& event);
 };
