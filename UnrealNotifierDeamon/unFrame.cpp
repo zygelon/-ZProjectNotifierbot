@@ -1,22 +1,40 @@
 #include "unFrame.h"
 #include "unApp.h"
+#include <filesystem>
+#include <vector>
 
 namespace UnID
 {
 	enum
 	{
 		startID = 10000,
-		fileDialogDescr,
+/*		fileDialogDescr,
 		fileDialogActivator,
-		telegrmLogin
+		telegrmLogin*/
 	};
 }
 
 namespace
 {
+	const std::string uprojectExtName = ".uproject";
+	bool isUprojectFileName(const std::string& fileName)
+	{
+		return fileName.find(uprojectExtName) != std::string::npos;
+	}
+
 	bool validateProjectPath(const wxString& projectPath)
 	{
-		return true;
+		namespace fs = std::filesystem;
+		std::vector<fs::path> paths;
+		for (const auto& entry : fs::directory_iterator(projectPath.wc_str()))
+		{
+			paths.emplace_back(entry.path().filename().string());
+			if (isUprojectFileName(entry.path().filename().string()))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }
 
@@ -24,7 +42,7 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	(wxMINIMIZE_BOX | wxCLOSE_BOX | wxSYSTEM_MENU | wxCAPTION)),
 	m_ownerApp(inOwnerApp)
 {
-	const wxString browseToDescrText = L"Project folder";
+	const wxString browseToDescrText = L"Project path";
 	const wxPoint browseToDescrPos = { 150, 50 };
 	auto* const fileDialogDescrText = new wxStaticText(this, wxID_ANY, browseToDescrText, browseToDescrPos);
 	
@@ -69,4 +87,5 @@ void unFrame::OnBrowseToClicked(wxCommandEvent& event)
 	}
 	event.Skip();
 	const bool isValidProjectPath = validateProjectPath(openDirDialog.GetPath());
+	bool bdasa = false;
 }
