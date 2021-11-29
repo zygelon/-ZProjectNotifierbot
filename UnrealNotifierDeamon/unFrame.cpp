@@ -8,37 +8,58 @@ namespace UnID
 		startID = 10000,
 		fileDialogDescr,
 		fileDialogActivator,
-		boxSizer
+		telegrmLogin
 	};
 }
 
-unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon", wxPoint(500, 500), wxSize(400, 200),
+namespace
+{
+	bool validateProjectPath(const wxString& projectPath)
+	{
+		return true;
+	}
+}
+
+unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon", wxPoint(400, 500), wxSize(300, 200),
 	(wxMINIMIZE_BOX | wxCLOSE_BOX | wxSYSTEM_MENU | wxCAPTION)),
 	m_ownerApp(inOwnerApp)
 {
-	const wxString descrText = "Subscribe daemon to your project.\n\Browse to your root UE Project folder";
-	const wxPoint DescrTextPosition = { 100, 20 };
-	m_fileDialogDescrText = new wxStaticText(this, UnID::fileDialogDescr, descrText, DescrTextPosition);
-	const wxPoint activatorPosition = { 150, 70 };
-	m_fileDialogActivator = new wxButton(this, UnID::fileDialogActivator, "Browse to...", activatorPosition);
-	m_fileDialogActivator->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::OnBrowseToClicked, this);
+	const wxString browseToDescrText = L"Project folder";
+	const wxPoint browseToDescrPos = { 150, 50 };
+	auto* const fileDialogDescrText = new wxStaticText(this, wxID_ANY, browseToDescrText, browseToDescrPos);
+	
+	const wxString telegrmLoginDescrText = L"Telegram Login";
+	const wxPoint telegrmLoginDescrPos = { 10, 50 };
+	auto* const telegrmLoginDescrTextObj = new wxStaticText(this, wxID_ANY, telegrmLoginDescrText, telegrmLoginDescrPos);
 
-	//wxStaticBox* boxSizer = new wxStaticBox(this, wxID_ANY);
-	//wxGridSizer* grid = new wxGridSizer(5, 10, 100, 100);
-	//grid->Add(m_fileDialogDescrText);
-	//grid->Add(m_fileDialogActivator);
+	const wxPoint telegrmLoginPos = { 10, 70 };
+	m_telegrmLoginTextBox = new wxTextCtrl(this, wxID_ANY, wxEmptyString, telegrmLoginPos, wxDefaultSize, wxTE_PROCESS_ENTER);
+	//m_telegrmLoginTextBox->Bind(wxEVT_TEXT_ENTER, &unFrame::OnTelegrmLoginEntered, this);
 
-	//SetSizer(grid);
-	//grid->Layout();
+	const wxPoint browseToPosition = { 150, 70 };
+	m_browseToButton = new wxButton(this, wxID_ANY, "Browse to...", browseToPosition);
+	m_browseToButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::OnBrowseToClicked, this);
 
+	const wxPoint activationButtonPos = { 150, 110 };
+	auto* const activateButton = new wxButton(this, wxID_ANY, "Activate", activationButtonPos);
+	activateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onActivateButtonClicked, this);
 
+}
+
+void unFrame::onActivateButtonClicked(wxCommandEvent& event)
+{
+	const wxString telegrmLogin = m_telegrmLoginTextBox->GetValue();
 }
 
 unFrame::~unFrame()
 {
 }
-
-void unFrame::OnBrowseToClicked(wxCommandEvent& evt)
+/* TODO: validate telegram login
+void unFrame::OnTelegrmLoginEntered(wxCommandEvent& event)
+{
+}
+*/
+void unFrame::OnBrowseToClicked(wxCommandEvent& event)
 {
 	wxDirDialog openDirDialog(this, _("Open folder with your project"), 
 		"", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
@@ -46,10 +67,6 @@ void unFrame::OnBrowseToClicked(wxCommandEvent& evt)
 	{
 		return;     // the user changed idea...
 	}
-	m_ownerApp->SetRootPath(openDirDialog.GetPath());
-	evt.Skip();
+	event.Skip();
+	const bool isValidProjectPath = validateProjectPath(openDirDialog.GetPath());
 }
-
-//void unFrame::OnOpen(wxCommandEvent& WXUNUSED)
-//{
-//}

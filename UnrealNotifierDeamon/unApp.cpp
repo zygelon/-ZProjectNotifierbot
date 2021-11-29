@@ -16,11 +16,6 @@ bool unApp::OnInit()
 	return true;
 }
 
-void unApp::SetRootPath(const wxString& InPath)
-{
-	m_rootProjectPath = InPath;
-}
-
 unApp::~unApp()
 {
 

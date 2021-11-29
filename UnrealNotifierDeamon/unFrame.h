@@ -15,9 +15,10 @@ public:
 private:
 	unApp* m_ownerApp = nullptr;
 
-	wxStaticText* m_fileDialogDescrText = nullptr;
-	wxButton* m_fileDialogActivator = nullptr;
+	wxTextCtrl* m_telegrmLoginTextBox = nullptr;
+	wxButton* m_browseToButton = nullptr;
 
-	void OnBrowseToClicked(wxCommandEvent& evt);
-	//wxFileDialog* m_fileDialog;
+	void onActivateButtonClicked(wxCommandEvent& event);
+	void OnBrowseToClicked(wxCommandEvent& event);
+	//void OnTelegrmLoginEntered(wxCommandEvent& event);
 };
