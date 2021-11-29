@@ -28,6 +28,8 @@ private:
 	void onActivateButtonClicked(wxCommandEvent& event);
 	void OnBrowseToClicked(wxCommandEvent& event);
 
+	void onTelegrmMessageClicked(wxCommandEvent& event);
+
 	void parsingLoop();
 	bool isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const;
 	//void OnTelegrmLoginEntered(wxCommandEvent& event);

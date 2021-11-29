@@ -4,8 +4,11 @@
 #include <fstream>
 #include <vector>
 #include <cassert>
+#define CURL_STATICLIB
+#include "curl/curl.h"
 
-using std::ifstream;
+using std::wifstream;
+using std::wstring;
 
 namespace UnID
 {
@@ -17,15 +20,11 @@ namespace UnID
 
 namespace
 {
-	const std::string uprojectExtName = ".uproject";
+	const wstring uprojectExtName = L".uproject";
 	const wxString logsRelativePath = L"\\Saved\\Logs\\";
 	const wxPoint windowPos = wxPoint(400, 500);
 	const wxSize windowSize = wxSize(250, 150);
-
-/*	bool isUprojectFileName(const std::string& fileName)
-	{
-		return fileName.find(uprojectExtName) != std::string::npos;
-	}*/
+	
 
 	wxString tryGetProjectName(const wxString& projectPath)
 	{
@@ -37,8 +36,8 @@ namespace
 		}
 		for (const auto& entry : fs::directory_iterator(projectPath.wc_str()))
 		{
-			auto iterFilename = entry.path().filename().string();
-			if (iterFilename.find(uprojectExtName) != std::string::npos)
+			auto iterFilename = entry.path().filename().wstring();
+			if (iterFilename.find(uprojectExtName) != wstring::npos)
 			{
 				iterFilename.erase(iterFilename.find(uprojectExtName));
 				return iterFilename;
@@ -60,9 +59,9 @@ namespace
 		return projectPath + logsRelativePath + projectName + L".log";
 	}
 
-	ifstream getFileToReading(const wxString& filePath)
+	wifstream getFileToReading(const wxString& filePath)
 	{
-		ifstream file;
+		wifstream file;
 		if (!std::filesystem::exists(filePath.wc_str()))
 		{
 			return file;
@@ -75,11 +74,11 @@ namespace
 	{
 		const auto& logFilePath = getPathToProjectLogFile(projectPath);
 		auto debug = logFilePath.wc_str();
-		ifstream file = getFileToReading(logFilePath);
+		wifstream file = getFileToReading(logFilePath);
 		if (file.is_open())
 		{
-			std::vector<std::string> debugLines;
-			for (std::string line; std::getline(file, line); )
+			std::vector<std::wstring> debugLines;
+			for (std::wstring line; std::getline(file, line); )
 			{
 				debugLines.emplace_back(line);
 			}
@@ -93,10 +92,7 @@ using std::string;
 
 bool unFrame::isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const
 {
-/*	if (m_parsingLoopStatus == parsingLoopStatus::Inactive)
-	{
-		return false;
-	}*/
+
 	return tryGetProjectName(projectPath) != wxString{} && telegrmName != wxString{};
 }
 
@@ -123,7 +119,15 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	auto* const activateButton = new wxButton(this, wxID_ANY, "Activate", activationButtonPos);
 	activateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onActivateButtonClicked, this);
 
+	//DEBUG
+	curl_global_init(CURL_GLOBAL_ALL);
+	const wxPoint telegramMessagebuttonPos = { 160, 70 };
+	auto* const sendTelegrmMessage = new wxButton(this, wxID_ANY, "Send Tlgrm", telegramMessagebuttonPos);
+	sendTelegrmMessage->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onTelegrmMessageClicked, this);
+
 	SetFocus();
+	
+
 	//parsingLoop();
 }
 
@@ -170,6 +174,16 @@ void unFrame::OnBrowseToClicked(wxCommandEvent& event)
 	else
 	{
 		showWarningDialog(wxT("Cannot find Uproject file on entered path"));
+	}
+}
+
+void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
+{
+	if (CURL* curl = curl_easy_init())
+	{
+		std::string readBuffer;
+		const std::string url = "https://api.telegram.org/botToken/getUpdates";
+		curl_easy_setopt(curl, CURLOPT_URL, url);
 	}
 }
 
