@@ -15,7 +15,7 @@ namespace UnID
 namespace
 {
 	const std::string uprojectExtName = ".uproject";
-	const wxString logsRelativePath = L"\\Saved\\Logs\\Challange.log";
+	const wxString logsRelativePath = L"\\Saved\\Logs\\";
 
 	bool isUprojectFileName(const std::string& fileName)
 	{
@@ -32,9 +32,10 @@ namespace
 		}
 		for (const auto& entry : fs::directory_iterator(projectPath.wc_str()))
 		{
-			const auto& iterFilename = entry.path().filename().string();
+			auto iterFilename = entry.path().filename().string();
 			if (isUprojectFileName(iterFilename))
 			{
+				iterFilename.erase(iterFilename.find(uprojectExtName));
 				return iterFilename;
 			}
 		}
@@ -50,12 +51,14 @@ namespace
 
 	wxString getPathToProjectLogFile(const wxString& projectPath)
 	{
-		return projectPath + logsRelativePath;
+		const wxString& projectName = tryGetProjectName(projectPath);
+		return projectPath + logsRelativePath + projectName + L".log";
 	}
 
 	void testParseProject(const wxString& projectPath)
 	{
 		const auto& logFilePath = getPathToProjectLogFile(projectPath);
+		auto debug = logFilePath.wc_str();
 		if (!std::filesystem::exists(logFilePath.wc_str()))
 		{
 			return;
@@ -97,7 +100,7 @@ void unFrame::onActivateButtonClicked(wxCommandEvent& event)
 		showWarningDialog(wxT("Please Enter Your Telegram Login"));
 		return;
 	}
-	if (tryGetProjectName(m_projectPath) != wxString{})
+	if (tryGetProjectName(m_projectPath) == wxString{})
 	{
 		showWarningDialog(wxT("Cannot find Uproject file on entered path"));
 		return;
