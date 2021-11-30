@@ -22,7 +22,10 @@ namespace
 	const wstring uprojectExtName = L".uproject";
 	const wxString logsRelativePath = L"\\Saved\\Logs\\";
 	const wxPoint windowPos = wxPoint(400, 500);
-	const wxSize windowSize = wxSize(250, 150);
+	const wxSize windowSize = wxSize(270, 150);
+
+	const wxString checkboxOnImageName = L"CheckBox_Off.png";
+	const wxString checkboxOffImageName = L"CheckBox_On.png";
 
 	wxString tryGetProjectName(const wxString& projectPath)
 	{
@@ -83,10 +86,28 @@ namespace
 			bool b = true;
 		}
 	}
-
 }
 
-using std::string;
+void unFrame::updateBrowseToCheckbox()
+{
+	if (m_browseToCheckboxImage)
+	{
+		m_browseToCheckboxImage->Destroy();
+	}
+	
+	const wxString checkboxImageName = tryGetProjectName(m_projectPath) == wxString{} ? checkboxOffImageName : checkboxOnImageName;
+	
+	wxPNGHandler* handler = new wxPNGHandler;
+	wxImage::AddHandler(handler);
+
+	const wxSize browseToCheckboxSize = { 15, 15 };
+	const wxPoint browseToCheckboxPos = { 170, 40 };
+	//m_browseToCheckboxImage = new wxStaticBitmap(this, wxID_ANY, wxBitmap(checkboxImageName, wxBITMAP_TYPE_PNG), browseToCheckboxPos);
+	//new wxImage(
+
+	//m_browseToCheckboxImage->SetScaleMode(wxStaticBitmapBase::ScaleMode::);
+	m_browseToCheckboxImage->Refresh();
+}
 
 bool unFrame::isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const
 {
@@ -118,13 +139,15 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	auto* const activateButton = new wxButton(this, wxID_ANY, "Activate", activationButtonPos);
 	activateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onActivateButtonClicked, this);
 
+	updateBrowseToCheckbox();
+
+	SetFocus();
+
 	//DEBUG
 	curl_global_init(CURL_GLOBAL_ALL);
 	const wxPoint telegramMessagebuttonPos = { 160, 70 };
 	auto* const sendTelegrmMessage = new wxButton(this, wxID_ANY, "Send Tlgrm", telegramMessagebuttonPos);
 	sendTelegrmMessage->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onTelegrmMessageClicked, this);
-
-	SetFocus();
 	
 
 	//parsingLoop();
@@ -174,6 +197,7 @@ void unFrame::OnBrowseToClicked(wxCommandEvent& event)
 	{
 		showWarningDialog(wxT("Cannot find Uproject file on entered path"));
 	}
+	updateBrowseToCheckbox();
 }
 
 void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
@@ -185,7 +209,7 @@ void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 	}
 }
-
+/*
 void unFrame::parsingLoop()
 {
 	while (1)
@@ -198,3 +222,4 @@ void unFrame::parsingLoop()
 		wxYield();
 	}
 }
+*/

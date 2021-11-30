@@ -22,15 +22,19 @@ private:
 	unApp* m_ownerApp = nullptr;
 
 	wxTextCtrl* m_telegrmLoginTextBox = nullptr;
+	wxStaticBitmap* m_telegrmCheckboxImage = nullptr;
+	wxStaticBitmap* m_browseToCheckboxImage = nullptr;
+
 	wxString m_projectPath = {};
+	 //
 	//parsingLoopStatus m_parsingLoopStatus = parsingLoopStatus::Inactive;
 
 	void onActivateButtonClicked(wxCommandEvent& event);
 	void OnBrowseToClicked(wxCommandEvent& event);
-
 	void onTelegrmMessageClicked(wxCommandEvent& event);
 
-	void parsingLoop();
+	//void parsingLoop();
+
 	bool isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const;
-	//void OnTelegrmLoginEntered(wxCommandEvent& event);
+	void updateBrowseToCheckbox();
 };

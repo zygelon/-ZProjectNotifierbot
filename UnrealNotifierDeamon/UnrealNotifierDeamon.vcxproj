@@ -26,6 +26,10 @@
     <ClCompile Include="unApp.cpp" />
     <ClCompile Include="unFrame.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="CheckBox_Off.png" />
+    <Image Include="CheckBox_On.png" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
