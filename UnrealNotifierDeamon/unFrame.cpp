@@ -6,7 +6,6 @@
 #include <cassert>
 #define CURL_STATICLIB
 #include "curl/curl.h"
-
 using std::wifstream;
 using std::wstring;
 
@@ -24,7 +23,6 @@ namespace
 	const wxString logsRelativePath = L"\\Saved\\Logs\\";
 	const wxPoint windowPos = wxPoint(400, 500);
 	const wxSize windowSize = wxSize(250, 150);
-	
 
 	wxString tryGetProjectName(const wxString& projectPath)
 	{
@@ -100,6 +98,7 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	(wxMINIMIZE_BOX | wxCLOSE_BOX | wxSYSTEM_MENU | wxCAPTION)),
 	m_ownerApp(inOwnerApp)
 {
+
 	const wxString browseToDescrText = L"Project path";
 	const wxPoint browseToDescrPos = { 150, 10 };
 	auto* const fileDialogDescrText = new wxStaticText(this, wxID_ANY, browseToDescrText, browseToDescrPos);
