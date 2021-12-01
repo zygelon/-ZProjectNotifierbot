@@ -21,13 +21,14 @@ namespace UnID
 
 namespace
 {
+	const wstring resourcesFolder = L"Resources\\";
 	const wstring uprojectExtName = L".uproject";
 	const wxString logsRelativePath = L"\\Saved\\Logs\\";
 	const wxPoint windowPos = wxPoint(400, 500);
 	const wxSize windowSize = wxSize(270, 150);
 
-	const wxString checkboxOnImageName = L"CheckBox_On.png";
-	const wxString checkboxOffImageName = L"CheckBox_Off.png";
+	const wxString checkboxOnImageName =  resourcesFolder + L"CheckBox_On.png";
+	const wxString checkboxOffImageName = resourcesFolder + L"CheckBox_Off.png";
 
 	wxString tryGetProjectName(const wxString& projectPath)
 	{
@@ -208,11 +209,8 @@ void unFrame::onBrowseToClicked(wxCommandEvent& event)
 	event.Skip();
 	const wxString& projectPath = openDirDialog.GetPath();
 	const bool isValidProjectPath = tryGetProjectName(projectPath) != wxString{};
-	if (isValidProjectPath)
-	{
-		m_projectPath = projectPath;
-	}
-	else
+	m_projectPath = projectPath;
+	if (!isValidProjectPath)
 	{
 		showWarningDialog(wxT("Cannot find Uproject file on entered path"));
 	}
