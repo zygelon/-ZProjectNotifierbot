@@ -24,17 +24,19 @@ private:
 	wxTextCtrl* m_telegrmLoginTextBox = nullptr;
 	wxStaticBitmap* m_telegrmCheckboxImage = nullptr;
 	wxStaticBitmap* m_browseToCheckboxImage = nullptr;
-
 	wxString m_projectPath = {};
 	 //
 	//parsingLoopStatus m_parsingLoopStatus = parsingLoopStatus::Inactive;
 
 	void onActivateButtonClicked(wxCommandEvent& event);
-	void OnBrowseToClicked(wxCommandEvent& event);
+	void onBrowseToClicked(wxCommandEvent& event);
+	void onTelegrmLoginChanged(wxCommandEvent& event);
 	void onTelegrmMessageClicked(wxCommandEvent& event);
 
 	//void parsingLoop();
 
 	bool isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const;
-	void updateBrowseToCheckbox();
+	void updateImageCheckbox(wxStaticBitmap* checkbox, const wxPoint& pos, const bool checkboxValue);
+	void updateBrowseToImageCheckbox();
+	void updateTelegrmImageCheckbox();
 };

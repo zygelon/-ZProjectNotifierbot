@@ -24,8 +24,8 @@ namespace
 	const wxPoint windowPos = wxPoint(400, 500);
 	const wxSize windowSize = wxSize(270, 150);
 
-	const wxString checkboxOnImageName = L"CheckBox_Off.png";
-	const wxString checkboxOffImageName = L"CheckBox_On.png";
+	const wxString checkboxOnImageName = L"CheckBox_On.png";
+	const wxString checkboxOffImageName = L"CheckBox_Off.png";
 
 	wxString tryGetProjectName(const wxString& projectPath)
 	{
@@ -88,25 +88,23 @@ namespace
 	}
 }
 
-void unFrame::updateBrowseToCheckbox()
+void unFrame::updateImageCheckbox(wxStaticBitmap* checkbox, const wxPoint& pos, const bool checkboxValue)
 {
-	if (m_browseToCheckboxImage)
+	if (checkbox)
 	{
-		m_browseToCheckboxImage->Destroy();
+		checkbox->Destroy();
 	}
-	
-	const wxString checkboxImageName = tryGetProjectName(m_projectPath) == wxString{} ? checkboxOffImageName : checkboxOnImageName;
+	const wxString checkboxImageName = checkboxValue ? checkboxOnImageName : checkboxOffImageName;
 	
 	wxPNGHandler* handler = new wxPNGHandler;
 	wxImage::AddHandler(handler);
-
-	const wxSize browseToCheckboxSize = { 15, 15 };
-	const wxPoint browseToCheckboxPos = { 170, 40 };
-	//m_browseToCheckboxImage = new wxStaticBitmap(this, wxID_ANY, wxBitmap(checkboxImageName, wxBITMAP_TYPE_PNG), browseToCheckboxPos);
-	//new wxImage(
-
-	//m_browseToCheckboxImage->SetScaleMode(wxStaticBitmapBase::ScaleMode::);
-	m_browseToCheckboxImage->Refresh();
+	
+	wxBitmap imageBitmap = { checkboxImageName, wxBITMAP_TYPE_PNG };
+	checkbox = new wxStaticBitmap(this, wxID_ANY,
+		imageBitmap, pos);
+	wxImage checkboxImage = imageBitmap.ConvertToImage();
+	checkboxImage.Rescale(20, 20);
+	checkbox->SetBitmap({ checkboxImage });
 }
 
 bool unFrame::isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const
@@ -129,18 +127,21 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	auto* const telegrmLoginDescrTextObj = new wxStaticText(this, wxID_ANY, telegrmLoginDescrText, telegrmLoginDescrPos);
 
 	const wxPoint telegrmLoginPos = { 10, 40 };
-	m_telegrmLoginTextBox = new wxTextCtrl(this, wxID_ANY, wxEmptyString, telegrmLoginPos, wxDefaultSize, wxTE_PROCESS_ENTER);
+	const wxSize telegrmLoginSize = { 75, 20 };
+	auto debug = wxDefaultSize;
+	m_telegrmLoginTextBox = new wxTextCtrl(this, wxID_ANY, wxEmptyString, telegrmLoginPos, telegrmLoginSize, wxTE_PROCESS_ENTER);
+	m_telegrmLoginTextBox->Bind(wxEVT_COMMAND_TEXT_UPDATED, &unFrame::onTelegrmLoginChanged, this);
 
 	const wxPoint browseToPosition = { 150, 40 };
 	auto* const browseToButton = new wxButton(this, wxID_ANY, "Browse to...", browseToPosition);
-	browseToButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::OnBrowseToClicked, this);
+	browseToButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onBrowseToClicked, this);
 
 	const wxPoint activationButtonPos = { 75, 70 };
 	auto* const activateButton = new wxButton(this, wxID_ANY, "Activate", activationButtonPos);
 	activateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onActivateButtonClicked, this);
 
-	updateBrowseToCheckbox();
-
+	updateBrowseToImageCheckbox();
+	updateTelegrmImageCheckbox();
 	SetFocus();
 
 	//DEBUG
@@ -151,6 +152,22 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	
 
 	//parsingLoop();
+}
+void unFrame::onTelegrmLoginChanged(wxCommandEvent& event)
+{
+	updateTelegrmImageCheckbox();
+}
+
+void unFrame::updateBrowseToImageCheckbox()
+{
+	const bool checkboxValue = tryGetProjectName(m_projectPath) != wxString{};
+	updateImageCheckbox(m_browseToCheckboxImage, wxPoint{ 230, 40 }, checkboxValue);
+}
+
+void unFrame::updateTelegrmImageCheckbox()
+{
+	const bool checkboxValue = m_telegrmLoginTextBox->GetValue() != wxString{};
+	updateImageCheckbox(m_browseToCheckboxImage, wxPoint{ 90, 40 }, checkboxValue);
 }
 
 void unFrame::onActivateButtonClicked(wxCommandEvent& event)
@@ -178,7 +195,7 @@ void unFrame::OnTelegrmLoginEntered(wxCommandEvent& event)
 {
 }
 */
-void unFrame::OnBrowseToClicked(wxCommandEvent& event)
+void unFrame::onBrowseToClicked(wxCommandEvent& event)
 {
 	wxDirDialog openDirDialog(this, _("Open folder with your project"), 
 		"", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
@@ -197,7 +214,7 @@ void unFrame::OnBrowseToClicked(wxCommandEvent& event)
 	{
 		showWarningDialog(wxT("Cannot find Uproject file on entered path"));
 	}
-	updateBrowseToCheckbox();
+	updateBrowseToImageCheckbox();
 }
 
 void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
