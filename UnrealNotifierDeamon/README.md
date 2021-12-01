@@ -1,4 +1,4 @@
-Used libraries:
-https://curl.se/
-https://www.wxwidgets.org/
+Used libraries:  <br />
+https://curl.se/  <br />
+https://www.wxwidgets.org/  <br />
 https://github.com/nlohmann/json
