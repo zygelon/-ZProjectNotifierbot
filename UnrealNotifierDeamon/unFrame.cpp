@@ -1,5 +1,6 @@
 #include "unFrame.h"
 #include "unApp.h"
+#include "credentials.h"
 #include <filesystem>
 #include <fstream>
 #include <vector>
@@ -233,8 +234,7 @@ void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
 {
 	if (CURL* curl = curl_easy_init())
 	{
-		const std::string url = "https://api.telegram.org/bot2137135917:AAGcQ8E_JLcj9LYsZY8BodaJXn6P_242pFE/getUpdates";
-		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+		curl_easy_setopt(curl, CURLOPT_URL, credentials::telegramToken.c_str());
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 		curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "https");

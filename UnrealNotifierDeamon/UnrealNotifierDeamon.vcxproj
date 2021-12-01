@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="credentials.h" />
     <ClInclude Include="unApp.h" />
     <ClInclude Include="unFrame.h" />
   </ItemGroup>

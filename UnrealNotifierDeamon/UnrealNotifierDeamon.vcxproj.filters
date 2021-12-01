@@ -21,6 +21,9 @@
     <ClInclude Include="unFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="credentials.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="unApp.cpp">
