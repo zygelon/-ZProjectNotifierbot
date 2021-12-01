@@ -6,6 +6,8 @@
 #include <cassert>
 #define CURL_STATICLIB
 #include "curl/curl.h"
+#include <nlohmann/json.hpp>
+
 using std::wifstream;
 using std::wstring;
 
@@ -217,13 +219,46 @@ void unFrame::onBrowseToClicked(wxCommandEvent& event)
 	updateBrowseToImageCheckbox();
 }
 
+static size_t WriteCallback(char* data, size_t size, size_t nmemb, void* _)
+{
+	// just a place for the cast
+
+//	size_t        rc = 0;
+//	std::string* stp = reinterpret_cast<std::string*>(userdata);
+	  // construct the JSON root object
+	nlohmann::json j;
+	return 0;
+}
+
+
 void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
 {
 	if (CURL* curl = curl_easy_init())
 	{
+		const std::string url = "https://api.telegram.org/bot2137135917:AAGcQ8E_JLcj9LYsZY8BodaJXn6P_242pFE/getUpdates";
+		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+		curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "https");
+		//curl_easy_setopt(curl, CUROPT_READDATA, )
+		//struct curl_slist* headers = NULL;
+		//curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+		//curl_easy_setopt(curl, CURLOPT_HOST)
+
 		std::string readBuffer;
-		const std::string url = "https://api.telegram.org/botToken/getUpdates";
-		curl_easy_setopt(curl, CURLOPT_URL, url);
+		char buffer[10000] = {};
+		//curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+
+		CURLcode res = curl_easy_perform(curl);
+		wxASSERT(res == CURLcode::CURLE_OK);
+		/*
+		curl_mime* mime = curl_mime_init(curl);
+		curl_mimepart* part = curl_mime_addpart(mime);
+		curl_mime_name(part, "chat_id");
+		curl_mime_filedata(part, "chat_id")*/
+		//curl_mime
+		bool b = true;
+		curl_easy_cleanup(curl);
 	}
 }
 /*
