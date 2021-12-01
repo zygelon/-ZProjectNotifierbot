@@ -220,12 +220,19 @@ void unFrame::onBrowseToClicked(wxCommandEvent& event)
 
 static size_t WriteCallback(char* data, size_t size, size_t nmemb, void* _)
 {
+	using namespace nlohmann;
 	// just a place for the cast
 
 //	size_t        rc = 0;
 //	std::string* stp = reinterpret_cast<std::string*>(userdata);
 	  // construct the JSON root object
-	nlohmann::json j;
+	json j = json::parse(data);
+	auto debugVal = j["ok"].get<bool>();
+	auto debugVal2 = j["ok"];
+
+	auto debugVal3 = j["result"];
+	auto debugVal4 = j["result"][0];
+	//auto debugVal2 = j["result"].get<std::string>();
 	return 0;
 }
 
@@ -234,14 +241,14 @@ void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
 {
 	if (CURL* curl = curl_easy_init())
 	{
-		curl_easy_setopt(curl, CURLOPT_URL, credentials::telegramToken.c_str());
+		curl_easy_setopt(curl, CURLOPT_URL, credentials::telegramUpdateUrl.c_str());
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-		curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "https");
+		curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "http");
 		//curl_easy_setopt(curl, CUROPT_READDATA, )
 		//struct curl_slist* headers = NULL;
 		//curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-		//curl_easy_setopt(curl, CURLOPT_HOST)
+		//curl_easy_setopt(curl, CURLOPT_HOST, "LocalHost");
 
 		std::string readBuffer;
 		char buffer[10000] = {};
