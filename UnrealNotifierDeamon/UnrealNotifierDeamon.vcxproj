@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="credentials.h" />
+    <ClInclude Include="xlog.h" />
     <ClInclude Include="tlgrm.h" />
     <ClInclude Include="unApp.h" />
     <ClInclude Include="unFrame.h" />
@@ -28,6 +29,7 @@
     <ClCompile Include="tlgrm.cpp" />
     <ClCompile Include="unApp.cpp" />
     <ClCompile Include="unFrame.cpp" />
+    <ClCompile Include="xlog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="CheckBox_Off.png" />

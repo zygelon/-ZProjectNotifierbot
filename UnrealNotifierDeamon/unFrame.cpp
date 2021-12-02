@@ -192,7 +192,7 @@ void unFrame::updateTelegrmImageCheckbox()
 	const bool checkboxValue =
 		[this]() {
 		const std::string tlgrmLogin = m_telegrmLoginTextBox->GetValue().ToStdString();
-		return tlgrmLogin != std::string {} && tlgrm::getChatId(tlgrmLogin).has_value();
+		return tlgrmLogin != std::string{} && tlgrm::getChatId(tlgrmLogin).has_value();
 	}();
 	updateImageCheckbox(&m_telegrmCheckboxImage, wxPoint{ 90, 40 }, checkboxValue);
 }
