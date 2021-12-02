@@ -65,6 +65,7 @@ namespace tlgrm
 				wxASSERT(tlgrm::hasKey(chatNode, tlgrm::id));
 				const auto& chatIdNode{ chatNode[tlgrm::id] };
 				wxASSERT(chatIdNode.is_number_unsigned());
+				retChatId = chatIdNode.get<size_t>();
 				bool test = false;
 			}
 		}

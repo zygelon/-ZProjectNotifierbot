@@ -124,7 +124,7 @@ void unFrame::updateImageCheckbox(wxStaticBitmap** checkboxPtr, const wxPoint& p
 	
 	wxBitmap imageBitmap = { checkboxImageName, wxBITMAP_TYPE_PNG };
 	checkbox = new wxStaticBitmap(this, wxID_ANY,
-		imageBitmap, pos);
+		imageBitmap, pos, wxDefaultSize, 0L, checkboxImageName);
 	wxImage checkboxImage = imageBitmap.ConvertToImage();
 	checkboxImage.Rescale(20, 20);
 	checkbox->SetBitmap({ checkboxImage });
@@ -133,7 +133,6 @@ void unFrame::updateImageCheckbox(wxStaticBitmap** checkboxPtr, const wxPoint& p
 
 bool unFrame::isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const
 {
-
 	return tryGetProjectName(projectPath) != wxString{} && telegrmName != wxString{};
 }
 
@@ -195,7 +194,7 @@ void unFrame::updateTelegrmImageCheckbox()
 		const std::string tlgrmLogin = m_telegrmLoginTextBox->GetValue().ToStdString();
 		return tlgrmLogin != std::string {} && tlgrm::getChatId(tlgrmLogin).has_value();
 	}();
-	updateImageCheckbox(&m_browseToCheckboxImage, wxPoint{ 90, 40 }, checkboxValue);
+	updateImageCheckbox(&m_telegrmCheckboxImage, wxPoint{ 90, 40 }, checkboxValue);
 }
 
 void unFrame::onActivateButtonClicked(wxCommandEvent& event)
