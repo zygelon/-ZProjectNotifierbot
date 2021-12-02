@@ -11,7 +11,9 @@ using std::string;
 
 namespace tlgrm
 {
-	optional<int> hackChatId = {};
+	//TODO: MB: hack, bcs I don't know how to through data to CURL callbacks
+	optional<size_t> retChatId = {};
+	optional<string> findingTlgrmLogin = {};
 
 	bool hasKey(const nlohmann::json& jsonObj, const std::string& key)
 	{
@@ -30,7 +32,7 @@ namespace tlgrm
 	void UpdateChatIdFromRawJson(const char* rawJsonData)
 	{
 		using namespace nlohmann;
-		hackChatId = {};
+		retChatId = {};
 		// just a place for the cast
 
 	//	size_t        rc = 0;
@@ -53,10 +55,18 @@ namespace tlgrm
 		for (const auto& resultElem : resultArray)
 		{
 			wxASSERT(tlgrm::hasKey(resultElem, tlgrm::updateId));
-			wxASSERT(tlgrm::hasKey(resultElem, tlgrm::chat));
 			wxASSERT(tlgrm::hasKey(resultElem, tlgrm::message));
 			const auto& messageNode{ resultElem[tlgrm::message] };
 			wxASSERT(tlgrm::hasKey(messageNode, tlgrm::chat));
+			const auto& chatNode{ messageNode[tlgrm::chat] };
+			wxASSERT(tlgrm::findingTlgrmLogin.has_value());
+			if (tlgrm::hasKey(chatNode, tlgrm::login) && chatNode[tlgrm::login] == findingTlgrmLogin.value())
+			{
+				wxASSERT(tlgrm::hasKey(chatNode, tlgrm::id));
+				const auto& chatIdNode{ chatNode[tlgrm::id] };
+				wxASSERT(chatIdNode.is_number_unsigned());
+				bool test = false;
+			}
 		}
 	}
 
@@ -90,19 +100,15 @@ namespace tlgrm
 
 			std::string readBuffer;
 			char buffer[10000] = {};
-			//curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
 
-			CURLcode res = curl_easy_perform(curl);
+			tlgrm::findingTlgrmLogin = tlgrmLogin;
+
+			const CURLcode res{ curl_easy_perform(curl) };
 			wxASSERT(res == CURLcode::CURLE_OK);
-			/*
-			curl_mime* mime = curl_mime_init(curl);
-			curl_mimepart* part = curl_mime_addpart(mime);
-			curl_mime_name(part, "chat_id");
-			curl_mime_filedata(part, "chat_id")*/
-			//curl_mime
-			bool b = true;
+
 			curl_easy_cleanup(curl);
 		}
-		return hackChatId;
+		findingTlgrmLogin = {};
+		return retChatId;
 	}
 }

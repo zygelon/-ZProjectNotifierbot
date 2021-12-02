@@ -36,7 +36,7 @@ private:
 	//void parsingLoop();
 
 	bool isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const;
-	void updateImageCheckbox(wxStaticBitmap* checkbox, const wxPoint& pos, const bool checkboxValue);
+	void updateImageCheckbox(wxStaticBitmap** checkboxPtr, const wxPoint& pos, const bool checkboxValue);
 	void updateBrowseToImageCheckbox();
 	void updateTelegrmImageCheckbox();
 };
