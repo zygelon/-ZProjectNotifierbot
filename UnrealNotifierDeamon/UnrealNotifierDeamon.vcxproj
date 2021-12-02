@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="credentials.h" />
+    <ClInclude Include="tlgrm.h" />
     <ClInclude Include="unApp.h" />
     <ClInclude Include="unFrame.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="tlgrm.cpp" />
     <ClCompile Include="unApp.cpp" />
     <ClCompile Include="unFrame.cpp" />
   </ItemGroup>

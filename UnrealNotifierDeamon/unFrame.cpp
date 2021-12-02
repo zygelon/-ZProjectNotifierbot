@@ -1,13 +1,9 @@
 #include "unFrame.h"
 #include "unApp.h"
-#include "credentials.h"
 #include <filesystem>
 #include <fstream>
 #include <vector>
 #include <cassert>
-#define CURL_STATICLIB
-#include "curl/curl.h"
-#include <nlohmann/json.hpp>
 
 using std::wifstream;
 using std::wstring;
@@ -149,7 +145,7 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	SetFocus();
 
 	//DEBUG
-	curl_global_init(CURL_GLOBAL_ALL);
+	
 	const wxPoint telegramMessagebuttonPos = { 160, 70 };
 	auto* const sendTelegrmMessage = new wxButton(this, wxID_ANY, "Send Tlgrm", telegramMessagebuttonPos);
 	sendTelegrmMessage->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onTelegrmMessageClicked, this);
@@ -218,53 +214,9 @@ void unFrame::onBrowseToClicked(wxCommandEvent& event)
 	updateBrowseToImageCheckbox();
 }
 
-static size_t WriteCallback(char* data, size_t size, size_t nmemb, void* _)
-{
-	using namespace nlohmann;
-	// just a place for the cast
-
-//	size_t        rc = 0;
-//	std::string* stp = reinterpret_cast<std::string*>(userdata);
-	  // construct the JSON root object
-	json j = json::parse(data);
-	auto debugVal = j["ok"].get<bool>();
-	auto debugVal2 = j["ok"];
-
-	auto debugVal3 = j["result"];
-	auto debugVal4 = j["result"][0];
-	//auto debugVal2 = j["result"].get<std::string>();
-	return 0;
-}
-
-
 void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
 {
-	if (CURL* curl = curl_easy_init())
-	{
-		curl_easy_setopt(curl, CURLOPT_URL, credentials::telegramUpdateUrl.c_str());
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-		curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "http");
-		//curl_easy_setopt(curl, CUROPT_READDATA, )
-		//struct curl_slist* headers = NULL;
-		//curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-		//curl_easy_setopt(curl, CURLOPT_HOST, "LocalHost");
 
-		std::string readBuffer;
-		char buffer[10000] = {};
-		//curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
-
-		CURLcode res = curl_easy_perform(curl);
-		wxASSERT(res == CURLcode::CURLE_OK);
-		/*
-		curl_mime* mime = curl_mime_init(curl);
-		curl_mimepart* part = curl_mime_addpart(mime);
-		curl_mime_name(part, "chat_id");
-		curl_mime_filedata(part, "chat_id")*/
-		//curl_mime
-		bool b = true;
-		curl_easy_cleanup(curl);
-	}
 }
 /*
 void unFrame::parsingLoop()

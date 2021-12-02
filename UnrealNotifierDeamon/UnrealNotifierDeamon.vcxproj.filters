@@ -24,12 +24,18 @@
     <ClInclude Include="credentials.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tlgrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="unApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="unFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tlgrm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
