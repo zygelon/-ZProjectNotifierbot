@@ -51,7 +51,7 @@ namespace tlgrm
 		}
 	}
 
-	void UpdateChatIdFromRawJson(const char* rawJsonData)
+	void updateChatIdFromRawJson(const char* rawJsonData)
 	{
 		using namespace nlohmann;
 		const wxString logPrefix = L"Telegram getUpdates ";
@@ -67,7 +67,7 @@ namespace tlgrm
 		// just a place for the cast
 
 		const json jsonObj{ json::parse(rawJsonData) };
-
+		auto jdebug = jsonObj[wconst::ok];
 		if (!tlgrm::hasKey(jsonObj, wconst::ok) || !jsonObj[wconst::ok].get<bool>())
 		{
 			const wxString warningMessage{ logPrefix + wxString{L"does not have 'ok'"} };
@@ -114,7 +114,7 @@ namespace tlgrm
 	size_t tlgrmReadCallback(char* data, size_t size, size_t nmemb, void* up)
 	{
 		const auto retVal = size * nmemb;
-		UpdateChatIdFromRawJson(data);
+		updateChatIdFromRawJson(data);
 		return retVal;
 	}
 }
@@ -126,6 +126,8 @@ namespace tlgrm
 		curl_global_init(CURL_GLOBAL_ALL);
 		if (CURL* curl = curl_easy_init())
 		{
+			const auto& url = wconst::tlgrmApiUrl + credentials::botToken + wconst::getUpdatesStr;
+			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, tlgrmReadCallback);
 			curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "http");
