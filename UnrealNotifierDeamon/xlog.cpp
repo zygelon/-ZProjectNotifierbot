@@ -2,9 +2,14 @@
 #include "wx/string.h"
 #include "wx/log.h"
 
+namespace
+{
+	auto logger{ wxLogStderr() };
+}
+
 void xlog(const ELogType logType, const wxString& message)
 {
-	const wxLogLevel wxLogType = [&logType]() -> wxLogLevel
+	const wxLogLevel logLevel = [&logType]() -> wxLogLevel
 	{
 		switch (logType)
 		{
@@ -19,5 +24,5 @@ void xlog(const ELogType logType, const wxString& message)
 			return wxLOG_Error;
 		}
 	}();
-	wxLog::SetComponentLevel(message, wxLogType);
+	logger.LogTextAtLevel(logLevel, message);
 }

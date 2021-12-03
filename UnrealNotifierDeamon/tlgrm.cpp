@@ -123,7 +123,7 @@ namespace tlgrm
 {
 	optional<int> getChatId(const std::string& tlgrmLogin)
 	{
-		curl_global_init(CURL_GLOBAL_ALL);
+		initCurlIfNeeded();
 		if (CURL* curl = curl_easy_init())
 		{
 			const auto& url = wconst::tlgrmApiUrl + credentials::botToken + wconst::getUpdatesStr;
@@ -138,7 +138,7 @@ namespace tlgrm
 			const wxString logPrefix = L"getChatId ";
 			if (res == CURLcode::CURLE_OK)
 			{
-				xlog(ELogType::info, logPrefix + L"Success");
+				xlog(ELogType::info, logPrefix + L" Http responce OK");
 			}
 			else
 			{

@@ -200,9 +200,9 @@ void unFrame::updateTelegrmImageCheckbox()
 void unFrame::onActivateButtonClicked(wxCommandEvent& event)
 {
 	const wxString& telegrmLogin = m_telegrmLoginTextBox->GetValue();
-	if (telegrmLogin == wxString{})
+	if (!tlgrm::getChatId(telegrmLogin.ToStdString()).has_value())
 	{
-		showWarningDialog(wxT("Please Enter Your Telegram Login"));
+		showWarningDialog(wxT("Telegram login is invalid"));
 		return;
 	}
 	if (tryGetProjectName(m_projectPath) == wxString{})
