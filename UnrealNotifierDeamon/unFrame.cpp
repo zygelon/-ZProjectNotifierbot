@@ -247,7 +247,7 @@ void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
 	const auto& chatId = tlgrm::getChatId(tlgrmLogin.ToStdString());
 	if (chatId.has_value())
 	{
-		tlgrm::sendMessage("Test message from zygelon", chatId.value());
+		tlgrm::sendMessage("Testmessagefromzyg elon", chatId.value());
 	}
 	bool debugval = true;
 }
