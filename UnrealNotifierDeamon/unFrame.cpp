@@ -5,6 +5,7 @@
 #include <vector>
 #include <cassert>
 #include "tlgrm.h"
+#include "xlog.h"
 
 using std::wifstream;
 using std::wstring;
@@ -247,7 +248,11 @@ void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
 	const auto& chatId = tlgrm::getChatId(tlgrmLogin.ToStdString());
 	if (chatId.has_value())
 	{
-		tlgrm::sendMessage("Testmessagefromzyg elon", chatId.value());
+		tlgrm::sendMessage("Test message from zygelon", chatId.value());
+	}
+	else
+	{
+		xlog(ELogType::warning, L"onTelegrmMessageClicked :: chat id invalid");
 	}
 	bool debugval = true;
 }

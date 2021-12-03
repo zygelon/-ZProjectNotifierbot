@@ -174,7 +174,7 @@ namespace tlgrm
 		const auto& urlBase = wconst::tlgrmApiUrl + credentials::botToken + wconst::sendMessage;
 		const auto& urlParams = "?chat_id=" + std::to_string(chatId) + "&text=" + message;
 		auto curlUrl =  urlBase + urlParams;
-		//
+
 		std::replace(curlUrl.begin(), curlUrl.end(), ' ', '+');
 		if (CURL* curl = curl_easy_init())
 		{
