@@ -36,6 +36,7 @@
   <ItemGroup>
     <Image Include="CheckBox_Off.png" />
     <Image Include="CheckBox_On.png" />
+    <Image Include="Resources\logo.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

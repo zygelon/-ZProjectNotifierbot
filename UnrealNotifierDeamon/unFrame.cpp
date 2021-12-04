@@ -130,11 +130,11 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	m_ownerApp(inOwnerApp),
 	m_parsingLoopTimer( this, EUnID::parserTimerID )
 {
-	//Show(true);
+
 	const wxString browseToDescrText = L"Project path";
 	const wxPoint browseToDescrPos = { 150, 10 };
 	auto* const fileDialogDescrText = new wxStaticText(this, wxID_ANY, browseToDescrText, browseToDescrPos);
-	
+
 	const wxString telegrmLoginDescrText = L"Telegram Login";
 	const wxPoint telegrmLoginDescrPos = { 10, 10 };
 	auto* const telegrmLoginDescrTextObj = new wxStaticText(this, wxID_ANY, telegrmLoginDescrText, telegrmLoginDescrPos);
@@ -148,11 +148,11 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	const wxPoint browseToPosition = { 150, 40 };
 	auto* const browseToButton = new wxButton(this, wxID_ANY, "Browse to...", browseToPosition);
 	browseToButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onBrowseToClicked, this);
-	
+
 	m_parsingLoopTimer.SetOwner(this);
 	this->Connect(m_parsingLoopTimer.GetId(), wxEVT_TIMER,
 		wxTimerEventHandler(unFrame::parsingLoop), NULL, this);
-	m_parsingLoopTimer.Start(10'000);
+	m_parsingLoopTimer.Start(7'000);
 
 	updateBrowseToImageCheckbox();
 	updateTelegrmImageCheckbox();
