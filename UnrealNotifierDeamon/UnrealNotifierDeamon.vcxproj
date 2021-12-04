@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="credentials.h" />
+    <ClInclude Include="ueLogParser.h" />
     <ClInclude Include="xlog.h" />
     <ClInclude Include="tlgrm.h" />
     <ClInclude Include="unApp.h" />
@@ -27,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tlgrm.cpp" />
+    <ClCompile Include="ueLogParser.cpp" />
     <ClCompile Include="unApp.cpp" />
     <ClCompile Include="unFrame.cpp" />
     <ClCompile Include="xlog.cpp" />

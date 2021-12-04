@@ -10,13 +10,18 @@
 using std::wifstream;
 using std::wstring;
 
-namespace UnID
+namespace EUnID
 {
 	enum
 	{
 		startID = 10000,
+		parserTimerID
 	};
 }
+
+//wxBEGIN_EVENT_TABLE(unFrame, wxFrame)
+//	EVT_TIMER(EUnID::parserTimerID, parsingLoop)
+//wxEND_EVENT_TABLE()
 
 namespace
 {
@@ -173,7 +178,6 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	const wxPoint telegramMessagebuttonPos = { 160, 70 };
 	auto* const sendTelegrmMessage = new wxButton(this, wxID_ANY, "Send Tlgrm", telegramMessagebuttonPos);
 	sendTelegrmMessage->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onTelegrmMessageClicked, this);
-	
 
 	//parsingLoop();
 }
@@ -211,9 +215,41 @@ void unFrame::onActivateButtonClicked(wxCommandEvent& event)
 		showWarningDialog(wxT("Cannot find Uproject file on entered path"));
 		return;
 	}
-	testParseProject(m_projectPath);
-	//parsingLoop();
+	m_parsingLoopTimer = new wxTimer(this, EUnID::parserTimerID);
+	m_parsingLoopTimer->Bind(wxEVT_TIMER, &unFrame::parsingLoop, this);
+	parseDataFromLog(true);
+	wxASSERT(m_parsingLoopTimer->Start(5));
 }
+
+void unFrame::parsingLoop(wxTimerEvent& evnt)
+{
+	const wxString& telegrmLogin = m_telegrmLoginTextBox->GetValue();
+	if (isParsingLoopActive(telegrmLogin, m_projectPath))
+	{
+		parseDataFromLog();
+	}
+}
+
+void unFrame::parseDataFromLog(bool IsFirstParsing)
+{
+	wxString tlgrmLogin = m_telegrmLoginTextBox->GetValue();
+	const auto chatId = tlgrm::getChatId(tlgrmLogin.ToStdString());
+	if (!chatId.has_value())
+	{
+		wxASSERT(false);
+		return;
+	}
+
+	const auto& logFilePath = getPathToProjectLogFile(m_projectPath);
+	wifstream file = getFileToReading(logFilePath);
+	const auto justParsedValue = parseUELog(file, EParserMask::editorStart);
+	if (!IsFirstParsing && justParsedValue & EParserMask::editorStart)
+	{
+		tlgrm::sendMessage("Start Editor", chatId.value());
+	}
+	m_parsedValue = justParsedValue;
+}
+
 
 unFrame::~unFrame()
 {
@@ -256,17 +292,3 @@ void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
 	}
 	bool debugval = true;
 }
-/*
-void unFrame::parsingLoop()
-{
-	while (1)
-	{
-		const wxString& telegrmLogin = m_telegrmLoginTextBox->GetValue();
-		if (isParsingLoopActive(telegrmLogin, m_projectPath))
-		{
-
-		}
-		wxYield();
-	}
-}
-*/

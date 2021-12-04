@@ -30,6 +30,9 @@
     <ClInclude Include="xlog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ueLogParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="unApp.cpp">
@@ -42,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="xlog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ueLogParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

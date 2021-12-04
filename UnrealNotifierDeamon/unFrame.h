@@ -1,6 +1,7 @@
 #pragma once
 
 #include "wx/wx.h"
+#include "ueLogParser.h"
 
 class unApp;
 
@@ -25,7 +26,9 @@ private:
 	wxStaticBitmap* m_telegrmCheckboxImage = nullptr;
 	wxStaticBitmap* m_browseToCheckboxImage = nullptr;
 	wxString m_projectPath = {};
-	 //
+
+	wxTimer* m_parsingLoopTimer = {};
+	EParserMask::type m_parsedValue = 0;
 	//parsingLoopStatus m_parsingLoopStatus = parsingLoopStatus::Inactive;
 
 	void onActivateButtonClicked(wxCommandEvent& event);
@@ -33,7 +36,8 @@ private:
 	void onTelegrmLoginChanged(wxCommandEvent& event);
 	void onTelegrmMessageClicked(wxCommandEvent& event);
 
-	//void parsingLoop();
+	void parseDataFromLog(bool IsFirstParsing = false);
+	void parsingLoop(wxTimerEvent& evnt);
 
 	bool isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const;
 	void updateImageCheckbox(wxStaticBitmap** checkboxPtr, const wxPoint& pos, const bool checkboxValue);
