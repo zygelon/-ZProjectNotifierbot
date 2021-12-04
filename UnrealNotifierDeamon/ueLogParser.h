@@ -10,4 +10,6 @@ namespace EParserMask
 
 bool isActiveBits(const EParserMask::type bitmask, const EParserMask::type bitsToCheck);
 
+bool isJustChangedBits(const EParserMask::type oldBitmask, const EParserMask::type newBitmask, const EParserMask::type bitsToCheck);
+
 EParserMask::type parseUELog(std::wifstream& file, const EParserMask::type parserMask);

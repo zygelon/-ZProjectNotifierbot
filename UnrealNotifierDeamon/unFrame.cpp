@@ -19,10 +19,6 @@ namespace EUnID
 	};
 }
 
-//wxBEGIN_EVENT_TABLE(unFrame, wxFrame)
-//	EVT_TIMER(EUnID::parserTimerID, parsingLoop)
-//wxEND_EVENT_TABLE()
-
 namespace
 {
 	namespace wconst
@@ -79,22 +75,6 @@ namespace
 		}
 		file.open(filePath.wc_str());
 		return file;
-	}
-
-	void testParseProject(const wxString& projectPath)
-	{
-		const auto& logFilePath = getPathToProjectLogFile(projectPath);
-		auto debug = logFilePath.wc_str();
-		wifstream file = getFileToReading(logFilePath);
-		if (file.is_open())
-		{
-			std::vector<std::wstring> debugLines;
-			for (std::wstring line; std::getline(file, line); )
-			{
-				debugLines.emplace_back(line);
-			}
-			bool b = true;
-		}
 	}
 }
 
@@ -159,34 +139,22 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 
 	const wxPoint telegrmLoginPos = { 10, 40 };
 	const wxSize telegrmLoginSize = { 75, 20 };
-	auto debug = wxDefaultSize;
+
 	m_telegrmLoginTextBox = new wxTextCtrl(this, wxID_ANY, wxEmptyString, telegrmLoginPos, telegrmLoginSize, wxTE_PROCESS_ENTER);
 	m_telegrmLoginTextBox->Bind(wxEVT_COMMAND_TEXT_UPDATED, &unFrame::onTelegrmLoginChanged, this);
 
 	const wxPoint browseToPosition = { 150, 40 };
 	auto* const browseToButton = new wxButton(this, wxID_ANY, "Browse to...", browseToPosition);
 	browseToButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onBrowseToClicked, this);
-
-	//const wxPoint activationButtonPos = { 75, 70 };
-	//auto* const activateButton = new wxButton(this, wxID_ANY, "Activate", activationButtonPos);
-	//activateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onActivateButtonClicked, this);
-
 	
 	m_parsingLoopTimer.SetOwner(this);
 	this->Connect(m_parsingLoopTimer.GetId(), wxEVT_TIMER,
 		wxTimerEventHandler(unFrame::parsingLoop), NULL, this);
-	m_parsingLoopTimer.Start(5000);
+	m_parsingLoopTimer.Start(10'000);
 
 	updateBrowseToImageCheckbox();
 	updateTelegrmImageCheckbox();
 	SetFocus();
-
-	//DEBUG
-	
-	const wxPoint telegramMessagebuttonPos = { 160, 70 };
-	auto* const sendTelegrmMessage = new wxButton(this, wxID_ANY, "Send Tlgrm", telegramMessagebuttonPos);
-	sendTelegrmMessage->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onTelegrmMessageClicked, this);
-	//parsingLoop();
 }
 
 void unFrame::onTelegrmLoginChanged(wxCommandEvent& event)
@@ -209,27 +177,7 @@ void unFrame::updateTelegrmImageCheckbox()
 	}();
 	updateImageCheckbox(&m_telegrmCheckboxImage, wxPoint{ 90, 40 }, checkboxValue);
 }
-/*
-void unFrame::onActivateButtonClicked(wxCommandEvent& event)
-{
-	const wxString& telegrmLogin = m_telegrmLoginTextBox->GetValue();
-	if (!tlgrm::getChatId(telegrmLogin.ToStdString()).has_value())
-	{
-		showWarningDialog(wxT("Telegram login is invalid"));
-		return;
-	}
-	if (tryGetProjectName(m_projectPath) == wxString{})
-	{
-		showWarningDialog(wxT("Cannot find Uproject file on entered path"));
-		return;
-	}
-	
-	//m_parsingLoopTimer->Bind(wxEVT_TIMER, &unFrame::parsingLoop, this);
-	//m_parsingLoopTimer->Connect(wxEVT_TIMER, &unFrame::parsingLoop, this);
-	parseDataFromLog();
-	wxASSERT(m_parsingLoopTimer.Start(5000));
-}
-*/
+
 void unFrame::parsingLoop(wxTimerEvent& evnt)
 {
 	const wxString& telegrmLogin = m_telegrmLoginTextBox->GetValue();
@@ -251,14 +199,13 @@ void unFrame::parseDataFromLog()
 
 	const auto& logFilePath = getPathToProjectLogFile(m_projectPath);
 	wifstream file = getFileToReading(logFilePath);
-	const auto justParsedValue = parseUELog(file, EParserMask::editorStart);
+	const auto recentParsedValue = parseUELog(file, EParserMask::editorStart);
 	const bool IsFirstParsing = !m_parsedValue.has_value();
-	if (!IsFirstParsing && isActiveBits(justParsedValue, EParserMask::editorStart)
-		&& isActiveBits(m_parsedValue.value(), EParserMask::editorStart))
+	if (!IsFirstParsing && isJustChangedBits(m_parsedValue.value(), recentParsedValue, EParserMask::editorStart))
 	{
 		tlgrm::sendMessage("Start Editor", chatId.value());
 	}
-	m_parsedValue = justParsedValue;
+	m_parsedValue = recentParsedValue;
 }
 
 
@@ -283,19 +230,4 @@ void unFrame::onBrowseToClicked(wxCommandEvent& event)
 		showWarningDialog(wxT("Cannot find Uproject file on entered path"));
 	}
 	updateBrowseToImageCheckbox();
-}
-
-void unFrame::onTelegrmMessageClicked(wxCommandEvent& event)
-{
-	const wxString& tlgrmLogin = m_telegrmLoginTextBox->GetValue();
-	const auto& chatId = tlgrm::getChatId(tlgrmLogin.ToStdString());
-	if (chatId.has_value())
-	{
-		tlgrm::sendMessage("Test message from zygelon", chatId.value());
-	}
-	else
-	{
-		xlog(ELogType::warning, L"onTelegrmMessageClicked :: chat id invalid");
-	}
-	bool debugval = true;
 }

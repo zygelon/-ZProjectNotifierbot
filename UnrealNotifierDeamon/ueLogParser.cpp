@@ -27,14 +27,15 @@ EParserMask::type parseUELog(std::wifstream& file, const EParserMask::type parse
 	int debugLineNum = 1;
 	for (std::wstring line; std::getline(file, line); )
 	{
-//		if (debugLineNum == 828)
-//		{
-//			xlog(ELogType::info, wxString{ "debug Str" });
-//		}
 		retVal |= parseLine(line, parserMask);
 		++debugLineNum;
 	}
 	return retVal;
+}
+
+bool isJustChangedBits(const EParserMask::type oldBitmask, const EParserMask::type newBitmask, const EParserMask::type bitsToCheck)
+{
+	return isActiveBits(newBitmask, bitsToCheck) && !isActiveBits(oldBitmask, bitsToCheck);
 }
 
 bool isActiveBits(const EParserMask::type bitmask, const EParserMask::type bitsToCheck)

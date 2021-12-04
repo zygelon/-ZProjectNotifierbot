@@ -18,8 +18,6 @@ public:
 	unFrame(unApp* inOwnerApp);
 	~unFrame();
 
-	//virtual void OnOpen(wxCommandEvent& WXUNUSED(event)) override;
-
 private:
 	unApp* m_ownerApp = nullptr;
 
@@ -30,12 +28,9 @@ private:
 
 	wxTimer m_parsingLoopTimer = {};
 	std::optional<EParserMask::type> m_parsedValue = {};
-	//parsingLoopStatus m_parsingLoopStatus = parsingLoopStatus::Inactive;
 
-	//void onActivateButtonClicked(wxCommandEvent& event);
 	void onBrowseToClicked(wxCommandEvent& event);
 	void onTelegrmLoginChanged(wxCommandEvent& event);
-	void onTelegrmMessageClicked(wxCommandEvent& event);
 
 	void parseDataFromLog();
 	void parsingLoop(wxTimerEvent& evnt);

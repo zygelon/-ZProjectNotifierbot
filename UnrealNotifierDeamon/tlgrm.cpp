@@ -128,9 +128,7 @@ namespace tlgrm
 		{
 			const auto& url = wconst::tlgrmApiUrl + credentials::botToken + wconst::getUpdatesStr;
 			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-			//curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, tlgrmReadCallback);
-			//curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "http");
 
 			tlgrm::findingTlgrmLogin = tlgrmLogin;
 
@@ -150,12 +148,6 @@ namespace tlgrm
 		return retChatId;
 	}
 
-	size_t tlgrmReadCallbackDebug(char* data, size_t size, size_t nmemb, void* up)
-	{
-		const auto retVal = size * nmemb;
-		return retVal;
-	}
-
 	//Hack, if curl does not work
 	void systemSendMessage(const std::string& message, const size_t chatId)
 	{
@@ -164,7 +156,7 @@ namespace tlgrm
 		const auto& urlParams = "?chat_id=" + std::to_string(chatId) + "&text=" + message;
 		const auto& curlUrl = urlBase + urlParams;
 		const auto& curlUrl2 = '"' + curlUrl + '"';
-		//xlog(ELogType::info, curlUrl2);
+
 		system((std::string("curl ") + curlUrl2).c_str());
 	}
 
