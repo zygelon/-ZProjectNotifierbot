@@ -26,7 +26,9 @@ namespace
 		const wstring resourcesFolder = L"Resources\\";
 		const wstring uprojectExtName = L".uproject";
 		const wxString logsRelativePath = L"\\Saved\\Logs\\";
-		const wxPoint windowPos = wxPoint(400, 500);
+
+		const wxString iconName = L"small.ico";
+
 		const wxSize windowSize = wxSize(270, 150);
 
 		const wxString checkboxOnImageName = resourcesFolder + L"CheckBox_On.png";
@@ -123,12 +125,12 @@ bool unFrame::isParsingLoopActive(const wxString& telegrmName, const wxString& p
 		tlgrm::getChatId(telegrmName.ToStdString());
 }
 
-unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon", wconst::windowPos, wconst::windowSize,
+unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon", wxDefaultPosition ,wconst::windowSize,
 	(wxMINIMIZE_BOX | wxCLOSE_BOX | wxSYSTEM_MENU | wxCAPTION)),
 	m_ownerApp(inOwnerApp),
 	m_parsingLoopTimer( this, EUnID::parserTimerID )
 {
-
+	//Show(true);
 	const wxString browseToDescrText = L"Project path";
 	const wxPoint browseToDescrPos = { 150, 10 };
 	auto* const fileDialogDescrText = new wxStaticText(this, wxID_ANY, browseToDescrText, browseToDescrPos);
@@ -154,6 +156,7 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 
 	updateBrowseToImageCheckbox();
 	updateTelegrmImageCheckbox();
+	Center();
 	SetFocus();
 }
 

@@ -6,7 +6,7 @@ wxIMPLEMENT_APP(unApp);
 
 namespace
 {
-	const wxString iconName = L"small.ico";
+	const wxString iconPath = L"Resources/logo.png";
 }
 
 unApp::unApp()
@@ -17,9 +17,9 @@ unApp::unApp()
 bool unApp::OnInit()
 {
 	m_frame = new unFrame(this);
-	//TODO: MB:
-	wxIcon* icon = new wxIcon(iconName, wxICON_DEFAULT_TYPE);
-	m_frame->SetIcon(*icon);
+	m_icon = new wxIcon(iconPath, wxBITMAP_TYPE_PNG);
+	//TODO: MB: Memory Leak
+	m_frame->SetIcon(*m_icon);
 
 	m_frame->Show();
 	return true;

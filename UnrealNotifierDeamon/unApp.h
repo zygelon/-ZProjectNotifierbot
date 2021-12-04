@@ -11,5 +11,6 @@ public:
 	virtual bool OnInit() override;
 
 private:
+	wxIcon* m_icon = nullptr;
 	class unFrame* m_frame = nullptr;
 };
