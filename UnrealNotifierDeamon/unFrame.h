@@ -2,6 +2,7 @@
 
 #include "wx/wx.h"
 #include "ueLogParser.h"
+#include <optional>
 
 class unApp;
 
@@ -27,16 +28,16 @@ private:
 	wxStaticBitmap* m_browseToCheckboxImage = nullptr;
 	wxString m_projectPath = {};
 
-	wxTimer* m_parsingLoopTimer = {};
-	EParserMask::type m_parsedValue = 0;
+	wxTimer m_parsingLoopTimer = {};
+	std::optional<EParserMask::type> m_parsedValue = {};
 	//parsingLoopStatus m_parsingLoopStatus = parsingLoopStatus::Inactive;
 
-	void onActivateButtonClicked(wxCommandEvent& event);
+	//void onActivateButtonClicked(wxCommandEvent& event);
 	void onBrowseToClicked(wxCommandEvent& event);
 	void onTelegrmLoginChanged(wxCommandEvent& event);
 	void onTelegrmMessageClicked(wxCommandEvent& event);
 
-	void parseDataFromLog(bool IsFirstParsing = false);
+	void parseDataFromLog();
 	void parsingLoop(wxTimerEvent& evnt);
 
 	bool isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const;

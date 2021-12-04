@@ -8,4 +8,6 @@ namespace EParserMask
 	const type PIEstart			= 2;
 }
 
+bool isActiveBits(const EParserMask::type bitmask, const EParserMask::type bitsToCheck);
+
 EParserMask::type parseUELog(std::wifstream& file, const EParserMask::type parserMask);

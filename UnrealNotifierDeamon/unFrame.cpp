@@ -139,12 +139,14 @@ void unFrame::updateImageCheckbox(wxStaticBitmap** checkboxPtr, const wxPoint& p
 
 bool unFrame::isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const
 {
-	return tryGetProjectName(projectPath) != wxString{} && telegrmName != wxString{};
+	return tryGetProjectName(projectPath) != wxString{} && 
+		tlgrm::getChatId(telegrmName.ToStdString());
 }
 
 unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon", wconst::windowPos, wconst::windowSize,
 	(wxMINIMIZE_BOX | wxCLOSE_BOX | wxSYSTEM_MENU | wxCAPTION)),
-	m_ownerApp(inOwnerApp)
+	m_ownerApp(inOwnerApp),
+	m_parsingLoopTimer( this, EUnID::parserTimerID )
 {
 
 	const wxString browseToDescrText = L"Project path";
@@ -165,9 +167,15 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	auto* const browseToButton = new wxButton(this, wxID_ANY, "Browse to...", browseToPosition);
 	browseToButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onBrowseToClicked, this);
 
-	const wxPoint activationButtonPos = { 75, 70 };
-	auto* const activateButton = new wxButton(this, wxID_ANY, "Activate", activationButtonPos);
-	activateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onActivateButtonClicked, this);
+	//const wxPoint activationButtonPos = { 75, 70 };
+	//auto* const activateButton = new wxButton(this, wxID_ANY, "Activate", activationButtonPos);
+	//activateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onActivateButtonClicked, this);
+
+	
+	m_parsingLoopTimer.SetOwner(this);
+	this->Connect(m_parsingLoopTimer.GetId(), wxEVT_TIMER,
+		wxTimerEventHandler(unFrame::parsingLoop), NULL, this);
+	m_parsingLoopTimer.Start(5000);
 
 	updateBrowseToImageCheckbox();
 	updateTelegrmImageCheckbox();
@@ -178,9 +186,9 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	const wxPoint telegramMessagebuttonPos = { 160, 70 };
 	auto* const sendTelegrmMessage = new wxButton(this, wxID_ANY, "Send Tlgrm", telegramMessagebuttonPos);
 	sendTelegrmMessage->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onTelegrmMessageClicked, this);
-
 	//parsingLoop();
 }
+
 void unFrame::onTelegrmLoginChanged(wxCommandEvent& event)
 {
 	updateTelegrmImageCheckbox();
@@ -201,7 +209,7 @@ void unFrame::updateTelegrmImageCheckbox()
 	}();
 	updateImageCheckbox(&m_telegrmCheckboxImage, wxPoint{ 90, 40 }, checkboxValue);
 }
-
+/*
 void unFrame::onActivateButtonClicked(wxCommandEvent& event)
 {
 	const wxString& telegrmLogin = m_telegrmLoginTextBox->GetValue();
@@ -215,12 +223,13 @@ void unFrame::onActivateButtonClicked(wxCommandEvent& event)
 		showWarningDialog(wxT("Cannot find Uproject file on entered path"));
 		return;
 	}
-	m_parsingLoopTimer = new wxTimer(this, EUnID::parserTimerID);
-	m_parsingLoopTimer->Bind(wxEVT_TIMER, &unFrame::parsingLoop, this);
-	parseDataFromLog(true);
-	wxASSERT(m_parsingLoopTimer->Start(5));
+	
+	//m_parsingLoopTimer->Bind(wxEVT_TIMER, &unFrame::parsingLoop, this);
+	//m_parsingLoopTimer->Connect(wxEVT_TIMER, &unFrame::parsingLoop, this);
+	parseDataFromLog();
+	wxASSERT(m_parsingLoopTimer.Start(5000));
 }
-
+*/
 void unFrame::parsingLoop(wxTimerEvent& evnt)
 {
 	const wxString& telegrmLogin = m_telegrmLoginTextBox->GetValue();
@@ -230,7 +239,7 @@ void unFrame::parsingLoop(wxTimerEvent& evnt)
 	}
 }
 
-void unFrame::parseDataFromLog(bool IsFirstParsing)
+void unFrame::parseDataFromLog()
 {
 	wxString tlgrmLogin = m_telegrmLoginTextBox->GetValue();
 	const auto chatId = tlgrm::getChatId(tlgrmLogin.ToStdString());
@@ -243,7 +252,9 @@ void unFrame::parseDataFromLog(bool IsFirstParsing)
 	const auto& logFilePath = getPathToProjectLogFile(m_projectPath);
 	wifstream file = getFileToReading(logFilePath);
 	const auto justParsedValue = parseUELog(file, EParserMask::editorStart);
-	if (!IsFirstParsing && justParsedValue & EParserMask::editorStart)
+	const bool IsFirstParsing = m_parsedValue.has_value();
+	if (!IsFirstParsing && isActiveBits(justParsedValue, EParserMask::editorStart)
+		&& isActiveBits(m_parsedValue.value(), EParserMask::editorStart))
 	{
 		tlgrm::sendMessage("Start Editor", chatId.value());
 	}
@@ -254,11 +265,7 @@ void unFrame::parseDataFromLog(bool IsFirstParsing)
 unFrame::~unFrame()
 {
 }
-/* TODO: validate telegram login
-void unFrame::OnTelegrmLoginEntered(wxCommandEvent& event)
-{
-}
-*/
+
 void unFrame::onBrowseToClicked(wxCommandEvent& event)
 {
 	wxDirDialog openDirDialog(this, _("Open folder with your project"), 

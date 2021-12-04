@@ -1,5 +1,7 @@
 #include "ueLogParser.h"
 #include <string>
+#include "xlog.h"
+#include "wx/string.h"
 
 using std::wstring;
 namespace
@@ -22,9 +24,20 @@ namespace
 EParserMask::type parseUELog(std::wifstream& file, const EParserMask::type parserMask)
 {
 	EParserMask::type retVal = 0;
+	int debugLineNum = 1;
 	for (std::wstring line; std::getline(file, line); )
 	{
+//		if (debugLineNum == 828)
+//		{
+//			xlog(ELogType::info, wxString{ "debug Str" });
+//		}
 		retVal |= parseLine(line, parserMask);
+		++debugLineNum;
 	}
 	return retVal;
+}
+
+bool isActiveBits(const EParserMask::type bitmask, const EParserMask::type bitsToCheck)
+{
+	return bitmask & bitsToCheck;
 }
