@@ -252,7 +252,7 @@ void unFrame::parseDataFromLog()
 	const auto& logFilePath = getPathToProjectLogFile(m_projectPath);
 	wifstream file = getFileToReading(logFilePath);
 	const auto justParsedValue = parseUELog(file, EParserMask::editorStart);
-	const bool IsFirstParsing = m_parsedValue.has_value();
+	const bool IsFirstParsing = !m_parsedValue.has_value();
 	if (!IsFirstParsing && isActiveBits(justParsedValue, EParserMask::editorStart)
 		&& isActiveBits(m_parsedValue.value(), EParserMask::editorStart))
 	{
