@@ -52,13 +52,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="CheckBox_On.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="CheckBox_Off.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Resources\logo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\CheckBox_On.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\CheckBox_Off.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

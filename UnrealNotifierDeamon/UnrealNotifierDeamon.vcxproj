@@ -34,9 +34,15 @@
     <ClCompile Include="xlog.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="CheckBox_Off.png" />
-    <Image Include="CheckBox_On.png" />
-    <Image Include="Resources\logo.png" />
+    <Image Include="Resources\CheckBox_Off.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Resources\CheckBox_On.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Resources\logo.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
