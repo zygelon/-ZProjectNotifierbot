@@ -11,10 +11,10 @@ namespace
 	EParserMask::type parseLine(const wstring& line, const EParserMask::type findParserMask)
 	{
 		EParserMask::type retVal = 0;
-		if (findParserMask & EParserMask::editorStart)
+		if (findParserMask & EParserMask::startEditor)
 		{
 			const int foundValue = line.find(editorStartStr) != wstring::npos;
-			retVal = EParserMask::editorStart * foundValue;
+			retVal = EParserMask::startEditor * foundValue;
 		}
 		return retVal;
 	}
@@ -41,4 +41,9 @@ bool isJustChangedBits(const EParserMask::type oldBitmask, const EParserMask::ty
 bool isActiveBits(const EParserMask::type bitmask, const EParserMask::type bitsToCheck)
 {
 	return bitmask & bitsToCheck;
+}
+
+void setActiveBit(EParserMask::type& bitmask, const int bit, const bool value)
+{
+	bitmask |= value << bit;
 }

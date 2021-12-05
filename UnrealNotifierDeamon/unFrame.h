@@ -27,7 +27,11 @@ private:
 	wxStaticBitmap* m_browseToCheckboxImage = nullptr;
 	wxString m_projectPath = {};
 
+	wxCheckBox* m_inputStartEditorCheckbox = nullptr;
+	wxStaticBitmap* m_startEditorImageCheckbox = nullptr;
+
 	wxTimer m_parsingLoopTimer = {};
+	EParserMask::type m_subscribedEvents = EParserMask::startEditor;
 	std::optional<EParserMask::type> m_parsedValue = {};
 
 	void onBrowseToClicked(wxCommandEvent& event);
@@ -37,7 +41,10 @@ private:
 	void parsingLoop(wxTimerEvent& evnt);
 
 	bool isParsingLoopActive(const wxString& telegrmName, const wxString& projectPath) const;
-	void updateImageCheckbox(wxStaticBitmap** checkboxPtr, const wxPoint& pos, const bool checkboxValue);
+
 	void updateBrowseToImageCheckbox();
 	void updateTelegrmImageCheckbox();
+	void updateStartEditorImageCheckbox();
+
+	void updateSubscribedEvents();
 };

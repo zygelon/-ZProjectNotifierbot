@@ -1,7 +1,7 @@
 #include "tlgrm.h"
 #include "xlog.h"
 #include <nlohmann/json.hpp>
-#include <wx\debug.h>
+#include <wx/debug.h>
 #define CURL_STATICLIB
 #include "curl/curl.h"
 #include "credentials.h"
