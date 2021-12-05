@@ -45,5 +45,12 @@ bool isActiveBits(const EParserMask::type bitmask, const EParserMask::type bitsT
 
 void setActiveBit(EParserMask::type& bitmask, const int bit, const bool value)
 {
-	bitmask |= value << bit;
+	if (value)
+	{
+		bitmask |= bit;
+	}
+	else
+	{
+		bitmask &= ~bit;
+	}
 }

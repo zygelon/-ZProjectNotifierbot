@@ -40,6 +40,8 @@ namespace
 		const int firstLineY = 10;
 		const int secondLineY = 30;
 		const int thirdLineY = 60;
+
+		const int parsingLoopUpdateTime = 5'000;
 	}
 
 	wxString tryGetProjectName(const wxString& projectPath)
@@ -178,7 +180,7 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 	m_parsingLoopTimer.SetOwner(this);
 	this->Connect(m_parsingLoopTimer.GetId(), wxEVT_TIMER,
 		wxTimerEventHandler(unFrame::parsingLoop), NULL, this);
-	m_parsingLoopTimer.Start(7'000);
+	m_parsingLoopTimer.Start(wconst::parsingLoopUpdateTime);
 
 	std::pair<wxCheckBox*, wxStaticBitmap*> startEditorCheckboxes = 
 		addSubscrLine(wconst::thirdLineY, L"Start Editor", true, m_panel);
@@ -232,6 +234,7 @@ void unFrame::parsingLoop(wxTimerEvent& evnt)
 	const wxString& telegrmLogin = m_telegrmLoginTextBox->GetValue();
 	if (isParsingLoopActive(telegrmLogin, m_projectPath))
 	{
+		updateSubscribedEvents();
 		parseDataFromLog();
 	}
 }
@@ -250,7 +253,8 @@ void unFrame::parseDataFromLog()
 	wifstream file = getFileToReading(logFilePath);
 	const auto recentParsedValue = parseUELog(file, EParserMask::startEditor);
 	const bool IsFirstParsing = !m_parsedValue.has_value();
-	if (!IsFirstParsing && isJustChangedBits(m_parsedValue.value(), recentParsedValue, EParserMask::startEditor))
+	if (!IsFirstParsing && isActiveBits(m_subscribedEvents, EParserMask::startEditor) &&
+		isJustChangedBits(m_parsedValue.value(), recentParsedValue, EParserMask::startEditor))
 	{
 		tlgrm::sendMessage("Start Editor", chatId.value());
 	}
@@ -285,5 +289,6 @@ void unFrame::onBrowseToClicked(wxCommandEvent& event)
 
 void unFrame::updateSubscribedEvents()
 {
-
+	const bool startEditorCheckboxValue = m_inputStartEditorCheckbox->GetValue();
+	setActiveBit(m_subscribedEvents, EParserMask::startEditor, startEditorCheckboxValue);
 }
