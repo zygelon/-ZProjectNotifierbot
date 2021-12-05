@@ -111,7 +111,7 @@ void unFrame::updateImageCheckbox(wxStaticBitmap** checkboxPtr, const wxPoint& p
 	wxImage::AddHandler(handler);
 	
 	wxBitmap imageBitmap = { checkboxImageName, wxBITMAP_TYPE_PNG };
-	checkbox = new wxStaticBitmap(this, wxID_ANY,
+	checkbox = new wxStaticBitmap(m_panel, wxID_ANY,
 		imageBitmap, pos, wxDefaultSize, 0L, checkboxImageName);
 	wxImage checkboxImage = imageBitmap.ConvertToImage();
 	checkboxImage.Rescale(20, 20);
@@ -125,28 +125,29 @@ bool unFrame::isParsingLoopActive(const wxString& telegrmName, const wxString& p
 		tlgrm::getChatId(telegrmName.ToStdString());
 }
 
-unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon", wxDefaultPosition ,wconst::windowSize,
+unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon", wxDefaultPosition, wconst::windowSize,
 	(wxMINIMIZE_BOX | wxCLOSE_BOX | wxSYSTEM_MENU | wxCAPTION)),
 	m_ownerApp(inOwnerApp),
 	m_parsingLoopTimer( this, EUnID::parserTimerID )
 {
+	m_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wconst::windowSize);
 
 	const wxString browseToDescrText = L"Project path";
 	const wxPoint browseToDescrPos = { 150, 10 };
-	auto* const fileDialogDescrText = new wxStaticText(this, wxID_ANY, browseToDescrText, browseToDescrPos);
+	auto* const fileDialogDescrText = new wxStaticText(m_panel, wxID_ANY, browseToDescrText, browseToDescrPos);
 
 	const wxString telegrmLoginDescrText = L"Telegram Login";
 	const wxPoint telegrmLoginDescrPos = { 10, 10 };
-	auto* const telegrmLoginDescrTextObj = new wxStaticText(this, wxID_ANY, telegrmLoginDescrText, telegrmLoginDescrPos);
+	auto* const telegrmLoginDescrTextObj = new wxStaticText(m_panel, wxID_ANY, telegrmLoginDescrText, telegrmLoginDescrPos);
 
 	const wxPoint telegrmLoginPos = { 10, 40 };
 	const wxSize telegrmLoginSize = { 75, 20 };
 
-	m_telegrmLoginTextBox = new wxTextCtrl(this, wxID_ANY, wxEmptyString, telegrmLoginPos, telegrmLoginSize, wxTE_PROCESS_ENTER);
+	m_telegrmLoginTextBox = new wxTextCtrl(m_panel, wxID_ANY, wxEmptyString, telegrmLoginPos, telegrmLoginSize, wxTE_PROCESS_ENTER);
 	m_telegrmLoginTextBox->Bind(wxEVT_COMMAND_TEXT_UPDATED, &unFrame::onTelegrmLoginChanged, this);
 
 	const wxPoint browseToPosition = { 150, 40 };
-	auto* const browseToButton = new wxButton(this, wxID_ANY, "Browse to...", browseToPosition);
+	auto* const browseToButton = new wxButton(m_panel, wxID_ANY, "Browse to...", browseToPosition);
 	browseToButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &unFrame::onBrowseToClicked, this);
 
 	m_parsingLoopTimer.SetOwner(this);

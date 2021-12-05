@@ -21,6 +21,7 @@ public:
 private:
 	unApp* m_ownerApp = nullptr;
 
+	wxPanel* m_panel = nullptr;
 	wxTextCtrl* m_telegrmLoginTextBox = nullptr;
 	wxStaticBitmap* m_telegrmCheckboxImage = nullptr;
 	wxStaticBitmap* m_browseToCheckboxImage = nullptr;
