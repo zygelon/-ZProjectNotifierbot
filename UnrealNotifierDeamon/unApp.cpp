@@ -18,14 +18,13 @@ bool unApp::OnInit()
 {
 	m_frame = new unFrame(this);
 	m_icon = new wxIcon(iconPath, wxBITMAP_TYPE_PNG);
-	//TODO: MB: Memory Leak
 	m_frame->SetIcon(*m_icon);
-
 	m_frame->Show();
+
 	return true;
 }
 
 unApp::~unApp()
 {
-
+	delete m_icon;
 }
