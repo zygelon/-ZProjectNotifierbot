@@ -3,6 +3,7 @@
 #include "xlog.h"
 #include "unApp.h"
 
+#include <wx/hyperlink.h>
 #include <wx/debug.h>
 
 #include <filesystem>
@@ -32,7 +33,7 @@ namespace
 
 		const wxString iconName = L"small.ico";
 
-		const wxSize windowSize = wxSize(270, 150);
+		const wxSize windowSize = wxSize(270, 200);
 
 		const wxString checkboxOnImageName = resourcesFolder + L"CheckBox_On.png";
 		const wxString checkboxOffImageName = resourcesFolder + L"CheckBox_Off.png";
@@ -40,6 +41,7 @@ namespace
 		const int firstLineY = 10;
 		const int secondLineY = 30;
 		const int thirdLineY = 60;
+		const int fourthLineY = 90;
 
 		const int parsingLoopUpdateTime = 5'000;
 	}
@@ -182,8 +184,12 @@ unFrame::unFrame(unApp* inOwnerApp) : wxFrame(nullptr, wxID_ANY, "Unreal Daemon"
 		wxTimerEventHandler(unFrame::parsingLoop), NULL, this);
 	m_parsingLoopTimer.Start(wconst::parsingLoopUpdateTime);
 
+	const wxString telegramlink{ L"https://t.me/ZProjectNotifierbot" };
+	const wxPoint telegramlinkPos{ 90, wconst::thirdLineY };
+	auto* telegramLinkHypertext = new wxHyperlinkCtrl(m_panel, wxID_ANY, wxString{ L"Telegram Bot" }, telegramlink, telegramlinkPos);
+
 	std::pair<wxCheckBox*, wxStaticBitmap*> startEditorCheckboxes = 
-		addSubscrLine(wconst::thirdLineY, L"Start Editor", true, m_panel);
+		addSubscrLine(wconst::fourthLineY, L"Start Editor", true, m_panel);
 
 	m_inputStartEditorCheckbox = startEditorCheckboxes.first;
 	m_startEditorImageCheckbox = startEditorCheckboxes.second;
